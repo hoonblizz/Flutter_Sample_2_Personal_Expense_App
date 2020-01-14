@@ -209,3 +209,94 @@ dependencies:
 ```
 잘 넣어줬으면, VSCode 같은 경우에는 자동으로 설치를 해준다.
 해당 패키지에 대한 자세한 설명은, [API reference](https://pub.dev/documentation/intl/latest/intl/intl-library.html) 를 참조하도록 한다. 
+
+
+## TextInput
+다음과 같은 텍스트 인풋이 있다고 하면, <br>
+```dart
+...
+child: Column(
+  children: <Widget>[
+    TextField(
+      decoration: InputDecoration(labelText: 'Title'),
+    ),
+    TextField(
+      decoration: InputDecoration(labelText: 'Amount'),
+    ),
+    FlatButton(
+      child: Text('Add Transaction'),
+      textColor: Colors.purple,
+      onPressed: () {},
+    )
+  ],
+),
+...
+```
+텍스트 필드에 쓰여지는 값을 어떻게 관리 할까? <br>
+여기에 두가지 방법이 있다. <br>
+하나는, `onChanged` 를 이용해서 각각 텍스트 인풋을 variable 에 넣어줘서 관리하는것. <br>
+보통 인풋안에 뭔가 추가적인 알고리즘이 들어가 있을때 용이하다. <br>
+```dart
+...
+child: Column(
+  children: <Widget>[
+    TextField(
+      decoration: InputDecoration(labelText: 'Title'),
+      onChanged: (val) {
+        titleInput = val;
+      },
+    ),
+    TextField(
+      decoration: InputDecoration(labelText: 'Amount'),
+      onChanged: (val) {
+        amountInput = val;
+      },
+    ),
+    FlatButton(
+      child: Text('Add Transaction'),
+      textColor: Colors.purple,
+      onPressed: () {
+        print(titleInput);
+        print(amountInput);
+      },
+    )
+  ],
+),
+...
+```
+두번째 방법은, 그냥 인풋이 간단한 인풋일때 유용하다. <br>
+variable 을 `TextEditingController()` 로 지정해주고 쓰는 방법. <br>
+예를들어,<br>
+```dart
+...
+final titleController = TextEditingController();
+final amountController = TextEditingController();
+
+....
+
+child: Column(
+  children: <Widget>[
+    TextField(
+      decoration: InputDecoration(labelText: 'Title'),
+      controller: titleController,
+      //onChanged: (val) => titleInput = val
+    ),
+    TextField(
+      decoration: InputDecoration(labelText: 'Amount'),
+      controller: amountController,
+      //onChanged: (val) => amountInput = val
+    ),
+    FlatButton(
+      child: Text('Add Transaction'),
+      textColor: Colors.purple,
+      onPressed: () {
+        print(titleController.text);
+
+      },
+    )
+  ],
+),
+...
+```
+나중에 인풋값은 `.text` 로 가져올수 있다. <br>
+
