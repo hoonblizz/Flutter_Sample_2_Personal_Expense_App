@@ -300,3 +300,52 @@ child: Column(
 ```
 나중에 인풋값은 `.text` 로 가져올수 있다. <br>
 
+## String to Double
+다음을 보면, <br>
+
+### new_transaction.dart
+```dart
+...
+FlatButton(
+  child: Text('Add Transaction'),
+  textColor: Colors.purple,
+  onPressed: () {
+    addTx(titleController.text, amountController.text)
+  },
+)
+...
+```
+### user_transaction.dart
+```dart
+...
+void _addNewTransaction(String txTitle, double txAmount) {
+  // 새로운 Transaction 만들고, 추가시켜준다.
+  final newTx = Transaction(title: txTitle, amount: txAmount, date: DateTime.now(), id: DateTime.now().toString(),);
+  setState(() {
+    _userTransactions.add(newTx);
+  });
+};
+
+@override
+Widget build(BuildContext context) {
+  return Column(children: <Widget>[
+    // 유저 인풋
+    NewTransaction(_addNewTransaction),
+    // 인풋 결과들 리스트
+    TransactionList(_userTransactions)
+  ],)
+}
+...
+```
+`_addNewTransaction` 에서 argument 로서 `String` 과 `Double`이 들어간다. <br>
+하지만, `new_transaction.dart` 에서 `onPress` 이벤트에서 보내줄때 둘다 `String` 으로 보내주게 되고, <br>
+이러면 에러가 난다. String 에서 Double 로 바꿔주는 무언가가 필요하다. <br>
+간단히, 스트링 부분을 `double.parse(amountController.text)` 이렇게 double parse 해주면 된다. <br>
+문제는, 이게 완벽한 솔루션이 아니라는것. 만약 안의 String 이 더블이 될수 없는 포멧이면 또다시 에러가 나기 때문. <br>
+
+## Scrolling
+`SingleChildScrollView` 가 한가지 옵션이 될수 있는데, <br>
+반드시 `Container` 로 묶고, `height` 를 어떤식으로든 지정해 주어야 작동을 잘 한다.<br>
+왜? 정해진 사이즈의 컨테이너 안에서 스크롤하게끔 만드는게 이 위젯의 작동 방법이기 때문. <br>
+
+
