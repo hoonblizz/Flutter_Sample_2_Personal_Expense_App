@@ -346,6 +346,103 @@ Widget build(BuildContext context) {
 ## Scrolling
 `SingleChildScrollView` 가 한가지 옵션이 될수 있는데, <br>
 반드시 `Container` 로 묶고, `height` 를 어떤식으로든 지정해 주어야 작동을 잘 한다.<br>
-왜? 정해진 사이즈의 컨테이너 안에서 스크롤하게끔 만드는게 이 위젯의 작동 방법이기 때문. <br>
+왜? 정해진 사이즈의 컨테이너 안에서 스크롤하게끔 만드는게 이 위젯의 작동 방법이기 때문. <br><br>
+그리고 실험해보면, 소프트 키보드가 인풋 위젯을 가리는것 같은 현상이 일어날수 있는데, 그걸 방지하기 위해서 <br>
+`body` 안쪽 에도 `SingleChildScrollView` 를 넣어준다. <br>
+### main.dart
+```dart
+...
+body: SingleChildScrollView(
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: <Widget>[
+...
+```
+### transaction_list.dart
+```dart
+...
+@override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      child: SingleChildScrollView(
+        child: Column(
+...
+```
+다른 옵션으로는 `ListView` 를 쓰는게 될수 있다. <br>
+`ListView` 에 여러 옵션들이 있고, direction 도 정할수 있어서, column, row 둘다 대체 가능하다. <br>
+주의점은, 그냥 단순히 `SingleChildScrollView`, `Column` 을 대체하는게 아니고, 이것도 역시 `height` 를 정해주는것이 매우 중요하다.<br><br>
+또 다른 옵션으로는 `ListView.builder()` 가 있다. <br><br>
 
+## ListView(children[]) vs ListView.builder()
+`ListView(children[])` 와 `ListView.builder()` 에는 어떤 차이가 있을까? <br><br>
+위에 언급했듯이, `ListView(children[])` 는 `SingleChildScrollView` + `Column` 이라고 할수 있다. <br>
+예를들어, 어떤 아이템 100개를 리스팅 한다고 할때, `ListView(children[])` 에서는 100개 모두 렌더링이 된다. <br>
+정확히는, 100개가 렌더링이 되어서 `SingleChildScrollView` 에 나타나지만 `Column` 안에 있는 아이템들만 보이게 된다. <br>
+`ListView.builder()` 는 오직 화면에 들어오는 아이템만 렌더링 하게된다. 정해진 컨테이너 밖의 아이템은 렌더링 되지 않는다.<br>
+결국엔 똑같아 보이지만, 리스트가 클수록 optimization 이나 performance 에서 차이가 나게 된다. <br><br>
+그러면 무조건 `ListView.builder()` 를 써야할까? <br>
+`ListView.builder()` 의 용법이 `ListView(children[])` 보다는 다소 복잡하고 코드가 길어지기 때문에, <br>
+확정된 짧은 리스트 에서는 쉽게 `ListView(children[])` 를 써주고, 무한정 길어질수 있는 리스트에서는 <br>
+`ListView.builder()` 를 사용해주면 된다. <br><br>
 
+`ListView.builder()` 는 우선 `itemBuilder`, `itemCount` 라는게 필요하다. 
+`itemBuilder` 는 렌더링 되는 위젯을 보내주면 되고, `itemCount` 는 말 그대로 아이템 갯수를 정해주면 된다. <br>
+
+```dart
+@override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      child: ListView.builder(
+        itemCount: transactions.length,   // <-- 아이템 수
+        itemBuilder: (context, index) {   // 
+          return Card(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 90,
+                  margin: EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 15,
+                  ),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                    color: Colors.purple,
+                    width: 2,
+                  )),
+                  padding: EdgeInsets.all(10),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '\$ ${transactions[index].amount.toString()}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      transactions[index].title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      DateFormat.yMMMd().format(transactions[index].date),
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ); 
+        },
+      ),
+    );
+  }
+```
