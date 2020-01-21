@@ -446,3 +446,148 @@ body: SingleChildScrollView(
     );
   }
 ```
+
+## Underscore as argument
+예를 들어, 다음이 있다.<br>
+```dart
+...
+void submitData() {
+  addTx(titleController.text, double.parse(amountController.text));
+}
+
+...
+
+TextField(
+  decoration: InputDecoration(labelText: 'Amount'),
+  controller: amountController,
+  keyboardType: TextInputType.number,
+  onSubmitted: () => submitData,
+),
+...
+```
+여기서 `onSubmitted: () => submitData(),` 부분에 에러가 나는걸 알수 있다.<br>
+이유는, `onSubmitted` 이 String 을 패스해주기 때문. <br>
+내가 쓰던 안쓰던 이걸 받아들여야 에러가 없어진다. <br>
+보통은 `onSubmitted: (val) => submitData(),` 이런식으로 해결이 가능하지만, 만약 패스되는 argument 수가 많다면? <br>
+그래서 쓰이는게 `onSubmitted: (_) => submitData(),` 이렇게 언더스코어로 나타내준다. <br>
+의미는, '어떤 argument든 받아는 들이지만, 사용은 않겠다` 라는 뜻. <br>
+
+## Widget property
+`new_transaction.dart` 는 stateless 위젯이었다. <br>
+그런데 텍스트 인풋을 저장하지 못하는 문제가 있어서, (인풋 내용이 onBlur 시에 없어지는 현상)<br>
+refactoring 을 이용해서 stateful 로 만들어주었다. <br>
+여기서 알수있는 한가지 중요한것. 
+```dart
+class NewTransaction extends StatefulWidget {
+  final Function addTx; //  user_transaction 에서 온 function
+
+  NewTransaction(this.addTx);
+
+  @override
+  _NewTransactionState createState() => _NewTransactionState();
+}
+
+class _NewTransactionState extends State<NewTransaction> {
+  final titleController = TextEditingController();
+
+  final amountController = TextEditingController();
+
+  void submitData() {
+    final enteredTitle = titleController.text;
+    final enteredAmount = double.parse(amountController.text);
+
+    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+      return;
+    }
+
+    widget.addTx(
+      enteredTitle,
+      enteredAmount,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ....
+
+...
+```
+`submitData` 에 보면 `widget.addTx` 를 볼수 있는데, <br>
+여기서 `widget` 이란 해당 widget 에서 무언가를 가져올수 있는 특별한 기능이다.<br>
+
+
+## Theme
+최상위의 `MaterialApp` 에서 `theme` 설정이 가능하다. <br>
+```dart
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter App',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+```
+그리고 다른 child 에서 이 theme 을 사용하고 싶으면, <br>
+일일이 지정해 주던가, 혹은 `Theme.of` 를 이용해서, context (상위의) theme 을 가져와서 사용한다. <br>
+```dart
+decoration: BoxDecoration(
+    border: Border.all(
+  color: Theme.of(context).primaryColor,
+  width: 2,
+)),
+```
+
+## Add Images
+기본적으로는 `Image` 를 통해 원하는곳에 넣으면 된다. <br>
+다음의 예는, `assets/images/image` 폴더를 만들고, 그 안에 이미지를 넣은다음, 다음과 같이 불러준다. <br>
+```dart
+Column(
+  children: <Widget>[
+    Text(
+      'No transaction added',
+      style: Theme.of(context).textTheme.title,
+    ),
+    Image.asset('assets/images/image/waiting.png'),
+  ],
+)
+```
+그 후에 중요한건, `pubspec.yaml` 에 추가시켜줘야 한다는것. <br>
+```dart
+# To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/image/waiting.png
+  #  - images/a_dot_ham.jpeg
+```
+그리고 앱을 재실행 시켜준다. <br>
+문제는 그냥 저렇게 이미지를 넣어주면 크기가 조정이 안되어 있다는것. <br>
+```dart
+Column(
+  children: <Widget>[
+    Text(
+      'No transaction added',
+      style: Theme.of(context).textTheme.title,
+    ),
+    SizedBox(height: 50,),
+    Container(
+        height: 200,
+        child: Image.asset(
+          'assets/images/image/waiting.png',
+          fit: BoxFit.cover,
+        )),
+  ],
+)
+```
+`SizedBox()` 는 안에 child 위젯을 넣을수도 있고, 아무것도 안넣을수도 있다. <br>
+위처럼 아무것도 안넣으면 그냥 separator 로서 활용되기도 한다. <br>
+`Image` 에게 최대 크기를 정해주기 위해 `Container` 로 감싸주고, `height` 도 정해준다. <br>
+그리고 `fit` 을 이용해서 이미지가 컨테이너 크기에 맞춰지도록 한다. <br>
+
+
