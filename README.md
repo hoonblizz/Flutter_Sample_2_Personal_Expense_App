@@ -591,3 +591,55 @@ Column(
 그리고 `fit` 을 이용해서 이미지가 컨테이너 크기에 맞춰지도록 한다. <br>
 
 
+## where
+javascript 의 filter 와 같이 Array 안의 내용이 True 인 아이들만 모아서 리턴해준다. <br>
+```dart
+// Chart 에 쓰일 트랜젝션만 골라넣은것
+List<Transaction> get _recentTransactions {
+  return _userTransactions.where((tx) {
+    // isAfter: 해당 날짜보다 후면 True
+    // 현재 시간 (DateTime.now()) 으로부터 7일 전 안에 해당되면 true.
+    return tx.date.isAfter(
+      DateTime.now().subtract(  
+        Duration(days: 7),
+      ),
+    );
+  }).toList();
+}
+```
+
+## Stack and bar graph
+`Stack` 위젯은 아이들을 겹치게 쌓을수 있다. (overlapping) <br>
+이걸 이용해서 바 그래프를 그릴수 있다. <br>
+```dart
+Container(
+  height: 60,
+  width: 10,
+  child: Stack(
+    children: <Widget>[
+      Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey, width: 1.0),
+          color: Color.fromRGBO(220, 220, 220, 1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      FractionallySizedBox(
+        heightFactor: spendingPctOfTotal,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      )
+    ],
+  ),
+),
+```
+`Container` 에서 크기를 잡아주고, (height, width) child 로서 `Stack` 을 넣기 시작한다. <br>
+`Stack` 안의 첫번째 `Container` 는 바 그래프의 배경이 되는 컨테이너를 그려준다. <br>
+그리고 두번째는 `Container` 도 좋지만, `FractionallySizedBox` 가 좀더 쉬운 방법이라 할수 있는데, <br>
+그 이유는 `FractionallySizedBox` 가 갖고있는 `heightFactor` 때문. <br>
+`heightFactor` 를 이용해서 퍼센트로 outter container 를 채울수 있다. <br>
+

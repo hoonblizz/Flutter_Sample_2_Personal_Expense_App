@@ -3,6 +3,7 @@ import 'package:flutter_sample_personal_expense_app/widgets/new_transaction.dart
 import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
 import './models/transaction.dart';
+import './widgets//chart.dart';
 
 void main() => runApp(MyApp());
 
@@ -58,6 +59,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
+  // Chart 에 쓰일 트랜젝션만 골라넣은것
+  List<Transaction> get _recentTransactions {
+    return _userTransactions.where((tx) {
+      // isAfter: 해당 날짜보다 후면 True
+      return tx.date.isAfter(
+        DateTime.now().subtract(
+          Duration(days: 7),
+        ),
+      );
+    }).toList();
+  }
+
   void _addNewTransaction(String txTitle, double txAmount) {
     // 새로운 Transaction 만들고, 추가시켜준다.
     final newTx = Transaction(
@@ -103,14 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             // Chart 컨테이너
-            Container(
-              width: double.infinity,
-              child: Card(
-                child: Text('Chart place'),
-                elevation: 5,
-                color: Colors.blue,
-              ),
-            ),
+            Chart(_recentTransactions),
             TransactionList(_userTransactions),
           ],
         ),
