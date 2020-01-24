@@ -646,6 +646,8 @@ Container(
 ## Flexible & FittebBox Widget
 `Flexible` 은 javascript 의 flex 와 비슷하다. `flex: 1` 와 같은 식으로 크기를 정해주거나, <br>
 `fit: FlexFit.tight,` 처럼 내용물 포지션을 지정해주는게 가능하다. <br>
+`FlexFit.tight` 는 마치 flex grow 처럼 남은 공간을 차지하게 된다. <br>
+<br>
 `FittebBox` 는 child 가 밖에 벗어나지 못하도록 해준다. 예를들면, multiline 텍스트가 되는걸 방지해준다랄지..<br>
 
 ## Padding Widget
