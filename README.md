@@ -643,3 +643,13 @@ Container(
 그 이유는 `FractionallySizedBox` 가 갖고있는 `heightFactor` 때문. <br>
 `heightFactor` 를 이용해서 퍼센트로 outter container 를 채울수 있다. <br>
 
+## Flexible & FittebBox Widget
+`Flexible` 은 javascript 의 flex 와 비슷하다. `flex: 1` 와 같은 식으로 크기를 정해주거나, <br>
+`fit: FlexFit.tight,` 처럼 내용물 포지션을 지정해주는게 가능하다. <br>
+`FittebBox` 는 child 가 밖에 벗어나지 못하도록 해준다. 예를들면, multiline 텍스트가 되는걸 방지해준다랄지..<br>
+
+## Padding Widget
+하다보면 디자인때문에 padding 을 써야할때가 많은데, <br>
+만약 `padding` 만을 위해서 `Container` 로 Refactoring 해줘야 하는 상황이라면 <br>
+`Padding` 이라는 위젯으로 Refactoring 해주는게 좋다.
+
