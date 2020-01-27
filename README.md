@@ -647,6 +647,7 @@ Container(
 `Flexible` 은 javascript 의 flex 와 비슷하다. `flex: 1` 와 같은 식으로 크기를 정해주거나, <br>
 `fit: FlexFit.tight,` 처럼 내용물 포지션을 지정해주는게 가능하다. <br>
 `FlexFit.tight` 는 마치 flex grow 처럼 남은 공간을 차지하게 된다. <br>
+생각보다 `Flexible`, `FlexFit.tight` 의 조합이 많이 쓰이기 때문에, 이걸 대체하는 위젯 `Expanded` 가 있다 <br>
 <br>
 `FittebBox` 는 child 가 밖에 벗어나지 못하도록 해준다. 예를들면, multiline 텍스트가 되는걸 방지해준다랄지..<br>
 
@@ -655,3 +656,35 @@ Container(
 만약 `padding` 만을 위해서 `Container` 로 Refactoring 해줘야 하는 상황이라면 <br>
 `Padding` 이라는 위젯으로 Refactoring 해주는게 좋다.
 
+
+## Date Picker
+`showDatePicker` 는 flutter 에서 기본으로 제공되는 date picker 이다. <br>
+기본 템플릿에서 ok 를 누르면 `.then` 으로 값을 불러서 쓸수 있다. <br>
+```dart
+showDatePicker(
+  context: context,
+  initialDate: DateTime.now(),
+  firstDate: DateTime(2019),
+  lastDate: DateTime.now(),
+).then((pickedDate) {
+  print('Picked date: ${pickedDate}');
+  if (pickedDate == null) {
+    return;
+  }
+  setState(() {   // setState 로 State 를 변경해줘야 렌더링이 일어난다.
+    _selectedDate = pickedDate;
+  });
+});
+
+...
+
+Expanded(
+  child: Text(
+    _selectedDate == null
+        ? 'No Date Chosen!'
+        : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
+  ),
+),
+
+...
+```

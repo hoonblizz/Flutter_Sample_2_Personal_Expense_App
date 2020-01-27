@@ -1,42 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sample_personal_expense_app/widgets/chart_bar.dart';
 import 'package:intl/intl.dart';
+
+import './chart_bar.dart';
 import '../models/transaction.dart';
 
 class Chart extends StatelessWidget {
-  final List<Transaction> recentTansactions;
-  Chart(this.recentTansactions);
+  final List<Transaction> recentTransactions;
 
-  // get 은
-  List<Map<String, Object>> get groupedTransactionValus {
+  Chart(this.recentTransactions);
+
+  List<Map<String, Object>> get groupedTransactionValues {
     return List.generate(7, (index) {
-      // 들어온 값이 어느 날 것인가 계산.
       final weekDay = DateTime.now().subtract(
         Duration(days: index),
-      ); // 1 ~ 7 일 을 지금 날짜에서 뺀다.
-      var totlaSum = 0.0;
+      );
+      var totalSum = 0.0;
 
-      for (var i = 0; i < recentTansactions.length; i++) {
-        if (recentTansactions[i].date.day == weekDay.day &&
-            recentTansactions[i].date.month == weekDay.month &&
-            recentTansactions[i].date.year == weekDay.year) {
-          totlaSum += recentTansactions[i].amount;
+      for (var i = 0; i < recentTransactions.length; i++) {
+        if (recentTransactions[i].date.day == weekDay.day &&
+            recentTransactions[i].date.month == weekDay.month &&
+            recentTransactions[i].date.year == weekDay.year) {
+          totalSum += recentTransactions[i].amount;
         }
       }
 
-      print(DateFormat.E().format(weekDay));
-      print(totlaSum);
-
       return {
         'day': DateFormat.E().format(weekDay).substring(0, 1),
-        'amount': totlaSum,
-      }; // DateFormat.E(weekDay) 로 요일을 부른다.
-    });
+        'amount': totalSum,
+      };
+    }).reversed.toList();
   }
 
   double get totalSpending {
-    return groupedTransactionValus.fold(0.0, (sum, el) {
-      return sum + el['amount'];
+    return groupedTransactionValues.fold(0.0, (sum, item) {
+      return sum + item['amount'];
     });
   }
 
@@ -49,13 +46,15 @@ class Chart extends StatelessWidget {
         padding: EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: groupedTransactionValus.map((data) {
+          children: groupedTransactionValues.map((data) {
             return Flexible(
               fit: FlexFit.tight,
               child: ChartBar(
                 data['day'],
                 data['amount'],
-                (data['amount'] as double) / totalSpending,
+                totalSpending == 0.0
+                    ? 0.0
+                    : (data['amount'] as double) / totalSpending,
               ),
             );
           }).toList(),

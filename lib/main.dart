@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sample_personal_expense_app/widgets/new_transaction.dart';
-import './widgets/transaction_list.dart';
+
 import './widgets/new_transaction.dart';
+import './widgets/transaction_list.dart';
+import './widgets/chart.dart';
 import './models/transaction.dart';
-import './widgets//chart.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter App',
+      title: 'Personal Expenses',
       theme: ThemeData(
           primarySwatch: Colors.purple,
           accentColor: Colors.amber,
@@ -38,12 +38,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  // String titleInput;
+  // String amountInput;
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // List of <Transaction>
   final List<Transaction> _userTransactions = [
     // Transaction(
     //   id: 't1',
@@ -53,16 +54,14 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
     // Transaction(
     //   id: 't2',
-    //   title: 'New Pencil',
-    //   amount: 7.45,
+    //   title: 'Weekly Groceries',
+    //   amount: 16.53,
     //   date: DateTime.now(),
     // ),
   ];
 
-  // Chart 에 쓰일 트랜젝션만 골라넣은것
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
-      // isAfter: 해당 날짜보다 후면 True
       return tx.date.isAfter(
         DateTime.now().subtract(
           Duration(days: 7),
@@ -72,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addNewTransaction(String txTitle, double txAmount) {
-    // 새로운 Transaction 만들고, 추가시켜준다.
     final newTx = Transaction(
       title: txTitle,
       amount: txAmount,
@@ -85,24 +83,26 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // Modal 설정
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
-        context: ctx,
-        builder: (_) {
-          return GestureDetector(
-            child: NewTransaction(_addNewTransaction),
-            onTap: () {},
-            behavior: HitTestBehavior.opaque,
-          );
-        });
+      context: ctx,
+      builder: (_) {
+        return GestureDetector(
+          onTap: () {},
+          child: NewTransaction(_addNewTransaction),
+          behavior: HitTestBehavior.opaque,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Homepage text'),
+        title: Text(
+          'Personal Expenses',
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
@@ -112,17 +112,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          //mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            // Chart 컨테이너
             Chart(_recentTransactions),
             TransactionList(_userTransactions),
           ],
         ),
       ),
-      // 플로팅 액션 버튼은 한 컨테이너에 들어가지 않고, 이런식으로 설정해줍니다.
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => _startAddNewTransaction(context),
